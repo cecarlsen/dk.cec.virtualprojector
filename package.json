@@ -1,0 +1,13 @@
+{
+  "name": "dk.cec.virtualprojector",
+  "version": "0.0.1",
+  "displayName": "Virtual Projector",
+  "description": "A virtual projector.",
+  "author": {
+    "name": "Carl Emil Carlsen",
+    "email": "public@cec.dk",
+    "url": "https://cec.dk"
+  },
+  "unity": "6000.2",
+  "type": "code"
+}
