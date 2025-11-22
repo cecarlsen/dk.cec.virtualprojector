@@ -33,6 +33,7 @@ Shader "Hidden/VirtualProjectorBlit"
 		//float4 _MainTex_TexelSize;
 		//float4 _MainTex_ST; // It looks like Graphics.Blit overwrites this.
 		float4 _MainTexTransform;
+		float4 _MaskColor;
 
 		ToFrag Vert( ToVert v )
 		{
@@ -56,7 +57,7 @@ Shader "Hidden/VirtualProjectorBlit"
 			//if( mainTexUv.x < 0.0 || mainTexUv.x > 1.0 ) return fixed4( 0, 1, 0, 1 );
 
 			// TODO: be clever.
-			if( mainTexUv.x < 0.0 || mainTexUv.x > 1.0 || mainTexUv.y < 0.0 || mainTexUv.y > 1.0 ) return fixed4( 0, 0, 0, 1 );
+			if( mainTexUv.x < 0.0 || mainTexUv.x > 1.0 || mainTexUv.y < 0.0 || mainTexUv.y > 1.0 ) return _MaskColor;
 
 			fixed4 col = tex2D( _MainTex, mainTexUv );
 

@@ -17,17 +17,23 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class VirtualProjector : MonoBehaviour
 {
+	[Header("Content")]
 	[SerializeField] Texture _texture;
-	[SerializeField,Range(0.1f,4f)] float _throwRatio = 0.5f;
-	[SerializeField,Range(-0.5f,0.5f)] float _horizontalLensShift = 0f;
-	[SerializeField,Range(-0.5f,0.5f)] float _verticalLensShift = 0f;
 	[SerializeField] float _brightness = 1f;
-	[SerializeField] float _range = 50f;
 	[SerializeField] Color _tint = Color.white;
+
+	[Header("Intrinsics")]
+	[SerializeField,Range(0.1f,4f)] float _throwRatio = 0.5f;
+	[SerializeField,Range(-1.5f,1.5f)] float _horizontalLensShift = 0f;
+	[SerializeField,Range(-1.5f,1.5f)] float _verticalLensShift = 0f;
+	[SerializeField] float _range = 50f;
 
 	[Header("Gizmos")]
 	[SerializeField] bool _drawGizmosAlways = false;
 	[SerializeField] Color _gizmoColor = new Color( 1f, 1f, 1f, 0.2f );
+
+	[Header("Debug")]
+	[SerializeField,Tooltip("Reveal how the texture is fitted into the spot circle.")] bool _showSpotArea = false;
 
 	[SerializeField,HideInInspector] Shader _blitShader;
 	[SerializeField,HideInInspector] Light _light;
@@ -69,16 +75,27 @@ public class VirtualProjector : MonoBehaviour
 		}
 	}
 
+	public bool showSpotArea
+	{
+		get { return _showSpotArea; }
+		set {
+			_showSpotArea = value;
+			if( _blitMaterial ) _blitMaterial.SetColor( ShaderIDs._MaskColor, _showSpotArea ? Color.green : Color.black );
+		}
+	}
+
 
 	static class ShaderIDs
 	{
 		public static readonly int _MainTexTransform = Shader.PropertyToID( nameof( _MainTexTransform ) );
+		public static readonly int _MaskColor = Shader.PropertyToID( nameof( _MaskColor ) );
 	}
 
 
 	void OnEnable()
 	{
 		EnsureResources();
+		OnValidate();
 	}
 
 
@@ -109,6 +126,7 @@ public class VirtualProjector : MonoBehaviour
 		brightness = _brightness;
 		range = _range;
 		tint = _tint;
+		showSpotArea = _showSpotArea;
 	}
 
 
@@ -147,54 +165,31 @@ public class VirtualProjector : MonoBehaviour
 
 	void UpdateProjection()
 	{
-		// To avoid the spolight cropping the input image to a circle, we have to make the cookie texture larger than the
-		// input image and pad it with black. This seems to be the dirty hack everyone does.
-
-		float imageWidthPx = _texture ? _texture.width : 1f;
-		float imageHeightPx = _texture ? _texture.height : 1f;
-
-		float imageDiagonalExtents = Mathf.Sqrt( imageWidthPx * imageWidthPx + imageHeightPx * imageHeightPx ) * 0.5f;
-		float imageWidthProportion = 0.5f * imageWidthPx / imageDiagonalExtents;
-		float imageHeightProportion = 0.5f * imageHeightPx / imageDiagonalExtents;
-		float spotWidthProportion = 1f / imageWidthProportion;
-		float spotHeightProportion = 1f / imageHeightProportion;
-		float cokieSizePxF = imageWidthPx * spotWidthProportion;
-		int cokieSizePx = Mathf.CeilToInt( cokieSizePxF );
-		float spotAngle = Mathf.Atan2( 0.5f * spotWidthProportion / _throwRatio, 1f ) * Mathf.Rad2Deg * 2f;
+		// Unity spot lights use a build in mask shader that crops the cookie texture to a circle. If we want to render a
+		// rectangle we have to fit it inside that circle. The spot cone is always on axis, so to simulate a lens shift (off axis projection), 
+		// we have to make padding on both directions no matter what side we shift to. This seems to be the dirty hack everyone does.
+		// So ... compute the texture transformation to handle this.
+		int imageWidthPx = _texture ? _texture.width : 1;
+		int imageHeightPx = _texture ? _texture.height : 1;
+		float imageToSlideWidth = 1f + Mathf.Abs( _horizontalLensShift ) * 2f;
+		float imageToSlideHeight = 1f + Mathf.Abs( _verticalLensShift ) * 2f;
+		float slideWidthPxF = imageWidthPx * imageToSlideWidth;
+		float slideHeightPxF = imageHeightPx * imageToSlideHeight;
+		float cookieSizePxF = Mathf.Sqrt( slideWidthPxF * slideWidthPxF + slideHeightPxF * slideHeightPxF ); // The diagonal of the slide area is the cookie size.
+		float cookieToImageWidth = imageWidthPx / cookieSizePxF;
+		float cookieToImageHeight = imageHeightPx / cookieSizePxF;
+		float cookieToSlideWidth = slideWidthPxF / cookieSizePxF;
+		float cookieToSlideHeight = slideHeightPxF / cookieSizePxF;
+		int cokieSizePx = Mathf.CeilToInt( cookieSizePxF );
+		float spotAngle = Mathf.Atan2( 0.5f / cookieToImageWidth / _throwRatio, 1f ) * Mathf.Rad2Deg * 2f;
+		float shiftX = 0.5f * ( 1f - cookieToSlideWidth ) / cookieToImageWidth;
+		float shiftY = 0.5f * ( 1f - cookieToSlideHeight ) / cookieToImageHeight;
 		var imageTransform = new Vector4(
-			spotWidthProportion,
-			spotHeightProportion,
-			-( 1f - imageWidthProportion ) * 0.5f * spotWidthProportion,
-			-( 1f - imageHeightProportion ) * 0.5f * spotHeightProportion
+			1f / cookieToImageWidth,
+			1f / cookieToImageHeight,
+			_horizontalLensShift > 0f ? - ( 1f-cookieToImageWidth ) / cookieToImageWidth + shiftX : -shiftX,
+			_verticalLensShift > 0f ? - ( 1f-cookieToImageHeight ) / cookieToImageHeight + shiftY : -shiftY
 		);
-
-		// TODO.
-		float horizontalShiftProportion = ( 1f + _horizontalLensShift * 2f );
-		float verticalShiftProportion = ( 1f + _verticalLensShift * 2f );
-		float shiftedImageAreaWidthPx = imageWidthPx * horizontalShiftProportion; // We need to extend in both directions.
-		float shiftedImageAreaHeightPx = imageHeightPx * verticalShiftProportion;
-		float shiftedImageAreaDiagonalExtents = Mathf.Sqrt( shiftedImageAreaWidthPx * shiftedImageAreaWidthPx + shiftedImageAreaHeightPx * shiftedImageAreaHeightPx ) * 0.5f;
-		float shiftedImageAreaWidthProportion = 0.5f * imageWidthPx / shiftedImageAreaDiagonalExtents;
-		float shiftedImageAreaHeightProportion = 0.5f * imageHeightPx / shiftedImageAreaDiagonalExtents;
-		float shiftedSpotWidthProportion = 1f / shiftedImageAreaWidthProportion;
-		float shiftedSpotHeightProportion = 1f / shiftedImageAreaHeightProportion;
-		float shiftedCokieSizePxF = imageWidthPx * shiftedSpotWidthProportion;
-		int shiftedCokieSizePx = Mathf.CeilToInt( shiftedCokieSizePxF );
-		float shiftedSpotAngle = Mathf.Atan2( 0.5f * shiftedSpotWidthProportion / _throwRatio, 1f ) * Mathf.Rad2Deg * 2f;
-		var shiftedImageTransform = new Vector4(
-			horizontalShiftProportion + spotWidthProportion,
-			verticalShiftProportion + spotHeightProportion,
-			-( 1f - imageWidthProportion ) * 0.5f * spotWidthProportion,
-			-( 1f - imageHeightProportion ) * 0.5f * spotHeightProportion
-		);
-
-		//spotAngle = shiftedSpotAngle;
-		//imageTransform = shiftedImageTransform;
-
-
-		// Update light.
-		_light.spotAngle = spotAngle;
-		_light.innerSpotAngle = spotAngle;
 
 		// Create or resize cokie.
 		if( !_cookieTexture || _cookieTexture.width != cokieSizePx )
@@ -208,7 +203,7 @@ public class VirtualProjector : MonoBehaviour
 		// Set shader constants.
 		_blitMaterial.SetVector( ShaderIDs._MainTexTransform, imageTransform );
 		
-		// Copy texture into cookie.
+		// Copy and transform texture into cookie.
 		if( _texture ){
 			Graphics.Blit( _texture, _cookieTexture, _blitMaterial, _TexturePass );
 		} else {
@@ -216,13 +211,13 @@ public class VirtualProjector : MonoBehaviour
 			Graphics.Blit( _cookieTexture, _blitMaterial, _WhitePass );
 		}
 
-		// Apply. This seems to be necesarry to update the rendered cookie.
-		_light.cookie = _cookieTexture;
-
-		// Other lights settings.
+		// Update light.
+		_light.cookie = _cookieTexture; // Trigger re-compositing of the light cookie atlas.
 		brightness = _brightness;
 		range = _range;
 		tint = _tint;
+		_light.spotAngle = spotAngle;
+		_light.innerSpotAngle = spotAngle;
 	}
 
 
@@ -241,7 +236,6 @@ public class VirtualProjector : MonoBehaviour
 			_light.transform.localRotation = Quaternion.identity;
 			_light.type = LightType.Spot;
 			_light.shadows = LightShadows.Hard;
-			//_light.shadowStrength = 1;
 			_dirty = true;
 		}
 		
