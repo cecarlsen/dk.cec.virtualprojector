@@ -148,15 +148,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a39f9714765e5462c824c20c8fd31c00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: VirtualProjectorRuntime::VirtualProjector
-  _texture: {fileID: 2800000, guid: ba64a882dff0ac24087b6ae8f5fe9150, type: 3}
+  _texture: {fileID: 2800000, guid: 6fa82cea6d1cc4cb7ad07d842cc8cd60, type: 3}
+  _brightness: 7.32
+  _tint: {r: 1, g: 1, b: 1, a: 1}
   _throwRatio: 0.5
   _horizontalLensShift: 0
   _verticalLensShift: 0
-  _brightness: 7.32
   _range: 50
-  _tint: {r: 1, g: 1, b: 1, a: 1}
   _drawGizmosAlways: 1
   _gizmoColor: {r: 1, g: 1, b: 1, a: 0.2}
+  _showSpotArea: 0
   _blitShader: {fileID: 4800000, guid: a4517448f3b8c4f17909fb11dd5b3bd4, type: 3}
   _light: {fileID: 1102667819}
 --- !u!4 &239372654
@@ -221,14 +222,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: VirtualProjectorRuntime::VirtualProjector
   _texture: {fileID: 2800000, guid: ba64a882dff0ac24087b6ae8f5fe9150, type: 3}
+  _brightness: 7.32
+  _tint: {r: 1, g: 1, b: 1, a: 1}
   _throwRatio: 0.5
   _horizontalLensShift: 0
   _verticalLensShift: 0
-  _brightness: 7.32
   _range: 50
-  _tint: {r: 1, g: 1, b: 1, a: 1}
   _drawGizmosAlways: 0
   _gizmoColor: {r: 1, g: 1, b: 1, a: 0.2}
+  _showSpotArea: 0
   _blitShader: {fileID: 4800000, guid: a4517448f3b8c4f17909fb11dd5b3bd4, type: 3}
   _light: {fileID: 1772023103}
 --- !u!84 &877679932
@@ -328,7 +330,7 @@ Light:
       e32: 0
       e33: 1
     m_UseCullingMatrixOverride: 0
-  m_Cookie: {fileID: 1543638530}
+  m_Cookie: {fileID: 1470420315}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
   m_RenderMode: 0
@@ -395,7 +397,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 239372654}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &1543638530
+--- !u!84 &1470420315
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

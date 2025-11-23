@@ -2,7 +2,7 @@
 	Copyright © Carl Emil Carlsen 2025
 	http://cec.dk
 
-	This hack is limited by the URP cookie atlas max resolution which is 4096x4096.
+	This hack is limited by the cookie atlas max resolution which is 4096x4096 in URP and 16384 in HDRP.
 	In practise you can only have a single 1920x1080 projection image at full resolution.
 	https://discussions.unity.com/t/released-projector-simulator/684142/156
 
@@ -13,14 +13,15 @@
 
 using System;
 using UnityEngine;
+#if VIRTUAL_PROJECTOR_HDRP
+	using UnityEngine.Rendering.HighDefinition;
+#endif
 
 [ExecuteInEditMode]
 public class VirtualProjector : MonoBehaviour
 {
 	[Header("Content")]
 	[SerializeField] Texture _texture;
-	[SerializeField] float _brightness = 1f;
-	[SerializeField] Color _tint = Color.white;
 
 	[Header("Intrinsics")]
 	[SerializeField,Range(0.1f,4f)] float _throwRatio = 0.5f;
@@ -46,34 +47,8 @@ public class VirtualProjector : MonoBehaviour
 
 	bool _dirty;
 
-	static readonly string logPrepend = $"<b>[{nameof( VirtualProjector )}]</b>";
+	public static readonly string logPrepend = $"<b>[{nameof( VirtualProjector )}]</b>";
 
-	public float brightness
-	{
-		get { return _brightness; }
-		set {
-			_brightness = value > 0f ? value : 0f;
-			if( _light ) _light.intensity = _brightness;
-		}
-	}
-
-	public float range
-	{
-		get { return _range; }
-		set {
-			_range = value > 0f ? value : 0f;
-			if( _light ) _light.range = _range;
-		}
-	}
-
-	public Color tint
-	{
-		get { return _tint; }
-		set {
-			_tint = value;
-			if( _light ) _light.color = _tint;
-		}
-	}
 
 	public bool showSpotArea
 	{
@@ -123,9 +98,6 @@ public class VirtualProjector : MonoBehaviour
 	{
 		_dirty = true;
 
-		brightness = _brightness;
-		range = _range;
-		tint = _tint;
 		showSpotArea = _showSpotArea;
 	}
 
@@ -167,7 +139,8 @@ public class VirtualProjector : MonoBehaviour
 	{
 		// Unity spot lights use a build in mask shader that crops the cookie texture to a circle. If we want to render a
 		// rectangle we have to fit it inside that circle. The spot cone is always on axis, so to simulate a lens shift (off axis projection), 
-		// we have to make padding on both directions no matter what side we shift to. This seems to be the dirty hack everyone does.
+		// we have to make padding in both directions no matter what side we shift to. This seems to be the dirty hack everyone does.
+
 		// So ... compute the texture transformation to handle this.
 		int imageWidthPx = _texture ? _texture.width : 1;
 		int imageHeightPx = _texture ? _texture.height : 1;
@@ -213,11 +186,15 @@ public class VirtualProjector : MonoBehaviour
 
 		// Update light.
 		_light.cookie = _cookieTexture; // Trigger re-compositing of the light cookie atlas.
-		brightness = _brightness;
-		range = _range;
-		tint = _tint;
 		_light.spotAngle = spotAngle;
 		_light.innerSpotAngle = spotAngle;
+
+		// Some retard decided HDRP should ignore innerSpotAngle and instead have it's own innerSpotPercent.
+		// https://docs.unity3d.com/Packages/com.unity.render-pipelines.high-definition@11.0/api/UnityEngine.Rendering.HighDefinition.HDAdditionalLightData.html
+#if VIRTUAL_PROJECTOR_HDRP
+		var hdLight = _light.GetComponent<HDAdditionalLightData>();
+		if( hdLight ) hdLight.innerSpotPercent = 100f;
+#endif
 	}
 
 

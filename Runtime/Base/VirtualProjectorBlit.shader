@@ -54,7 +54,6 @@ Shader "Hidden/VirtualProjectorBlit"
 		fixed4 FragTexture( ToFrag i ) : SV_Target
 		{
 			float2 mainTexUv = i.uv * _MainTexTransform.xy + _MainTexTransform.zw;
-			//if( mainTexUv.x < 0.0 || mainTexUv.x > 1.0 ) return fixed4( 0, 1, 0, 1 );
 
 			// TODO: be clever.
 			if( mainTexUv.x < 0.0 || mainTexUv.x > 1.0 || mainTexUv.y < 0.0 || mainTexUv.y > 1.0 ) return _MaskColor;
