@@ -149,8 +149,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: VirtualProjectorRuntime::VirtualProjector
   _texture: {fileID: 2800000, guid: 6fa82cea6d1cc4cb7ad07d842cc8cd60, type: 3}
-  _brightness: 7.32
-  _tint: {r: 1, g: 1, b: 1, a: 1}
   _throwRatio: 0.5
   _horizontalLensShift: 0
   _verticalLensShift: 0
@@ -192,7 +190,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &636192778
 Transform:
   m_ObjectHideFlags: 0
@@ -221,9 +219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a39f9714765e5462c824c20c8fd31c00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: VirtualProjectorRuntime::VirtualProjector
-  _texture: {fileID: 2800000, guid: ba64a882dff0ac24087b6ae8f5fe9150, type: 3}
-  _brightness: 7.32
-  _tint: {r: 1, g: 1, b: 1, a: 1}
+  _texture: {fileID: 2800000, guid: 6fa82cea6d1cc4cb7ad07d842cc8cd60, type: 3}
   _throwRatio: 0.5
   _horizontalLensShift: 0
   _verticalLensShift: 0
@@ -233,7 +229,7 @@ MonoBehaviour:
   _showSpotArea: 0
   _blitShader: {fileID: 4800000, guid: a4517448f3b8c4f17909fb11dd5b3bd4, type: 3}
   _light: {fileID: 1772023103}
---- !u!84 &877679932
+--- !u!84 &1085802593
 RenderTexture:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -262,7 +258,7 @@ RenderTexture:
   m_TextureSettings:
     serializedVersion: 2
     m_FilterMode: 1
-    m_Aniso: 0
+    m_Aniso: 1
     m_MipBias: 0
     m_WrapU: 1
     m_WrapV: 1
@@ -330,7 +326,7 @@ Light:
       e32: 0
       e33: 1
     m_UseCullingMatrixOverride: 0
-  m_Cookie: {fileID: 1470420315}
+  m_Cookie: {fileID: 1085802593}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
   m_RenderMode: 0
@@ -397,43 +393,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 239372654}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!84 &1470420315
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: VirtualProjection
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 6
-  m_Width: 2203
-  m_Height: 2203
-  m_AntiAliasing: 1
-  m_MipCount: -1
-  m_DepthStencilFormat: 90
-  m_ColorFormat: 4
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 1
-  m_UseDynamicScale: 0
-  m_UseDynamicScaleExplicit: 0
-  m_BindMS: 0
-  m_EnableCompatibleFormat: 1
-  m_EnableRandomWrite: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
-  m_ShadowSamplingMode: 2
 --- !u!1 &1701529948
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,7 +459,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: b114e6df68b8d46a1bcb345677a4c350, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -606,7 +565,7 @@ Light:
       e32: 0
       e33: 1
     m_UseCullingMatrixOverride: 0
-  m_Cookie: {fileID: 877679932}
+  m_Cookie: {fileID: 1848739865}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
   m_RenderMode: 0
@@ -673,6 +632,43 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!84 &1848739865
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: VirtualProjection
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 6
+  m_Width: 2203
+  m_Height: 2203
+  m_AntiAliasing: 1
+  m_MipCount: -1
+  m_DepthStencilFormat: 90
+  m_ColorFormat: 4
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 1
+  m_UseDynamicScale: 0
+  m_UseDynamicScaleExplicit: 0
+  m_BindMS: 0
+  m_EnableCompatibleFormat: 1
+  m_EnableRandomWrite: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
+  m_ShadowSamplingMode: 2
 --- !u!1 &1972909463
 GameObject:
   m_ObjectHideFlags: 0
