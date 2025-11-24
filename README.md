@@ -6,6 +6,8 @@ VirtualProjector depends on a high light cookie atlas resolution. Set it to the 
 
 Developed in Unity 6.2.
 
+![VirtualProjector2](https://github.com/user-attachments/assets/350370e3-7c3d-4f54-8c34-15da7533e700)
+
 ## Known issues
 
 - Low resolution artifact jitter when chaning lens shifting. The light cookie atlas freaks out when chaning light cookie resolution on every frame.
