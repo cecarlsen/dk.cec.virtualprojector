@@ -25,8 +25,8 @@ public class VirtualProjector : MonoBehaviour
 
 	[Header("Intrinsics")]
 	[SerializeField,Range(0.1f,4f)] float _throwRatio = 0.5f;
-	[SerializeField,Range(-1.5f,1.5f)] float _horizontalLensShift = 0f;
-	[SerializeField,Range(-1.5f,1.5f)] float _verticalLensShift = 0f;
+	[SerializeField,Range(-1f,1f)] float _horizontalLensShift = 0f;
+	[SerializeField,Range(-1f,1f)] float _verticalLensShift = 0f;
 	[SerializeField] float _range = 50f;
 
 	[Header("Gizmos")]
@@ -46,6 +46,8 @@ public class VirtualProjector : MonoBehaviour
 	int _TexturePass;
 
 	bool _dirty;
+
+	int _textureCount = 0;
 
 	public static readonly string logPrepend = $"<b>[{nameof( VirtualProjector )}]</b>";
 
@@ -83,7 +85,7 @@ public class VirtualProjector : MonoBehaviour
 	}
 
 
-	void Update()
+	void LateUpdate()
 	{
 		if( !EnsureResources() ) return;
 
@@ -167,9 +169,12 @@ public class VirtualProjector : MonoBehaviour
 		// Create or resize cokie.
 		if( !_cookieTexture || _cookieTexture.width != cokieSizePx )
 		{
-			if( _cookieTexture != null ) _cookieTexture?.Release();
-			_cookieTexture = new RenderTexture( cokieSizePx, cokieSizePx, 16, RenderTextureFormat.ARGB32 );
-			_cookieTexture.wrapMode = TextureWrapMode.Clamp;
+			if( _cookieTexture != null ){
+				_cookieTexture?.Release();
+				if( Application.isPlaying ) Destroy( _cookieTexture );
+				else DestroyImmediate( _cookieTexture );
+			}
+			_cookieTexture = new RenderTexture( cokieSizePx, cokieSizePx, 0, RenderTextureFormat.ARGB32 );
 			_cookieTexture.name = "VirtualProjection";
 		}
 
@@ -179,6 +184,7 @@ public class VirtualProjector : MonoBehaviour
 		// Copy and transform texture into cookie.
 		if( _texture ){
 			Graphics.Blit( _texture, _cookieTexture, _blitMaterial, _TexturePass );
+			_cookieTexture.IncrementUpdateCount();
 		} else {
 			// TODO: Make a cool looking default grid here.
 			Graphics.Blit( _cookieTexture, _blitMaterial, _WhitePass );
