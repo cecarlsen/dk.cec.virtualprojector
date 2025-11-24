@@ -8,6 +8,14 @@ Developed in Unity 6.2.
 
 ![VirtualProjector2](https://github.com/user-attachments/assets/350370e3-7c3d-4f54-8c34-15da7533e700)
 
+## Installation
+
+Install Virtual Projector via Unity's Package Manager. Select "Install package from git URL..." and paste in:
+
+	https://github.com/cecarlsen/dk.cec.virtualprojector.git
+
+If it doesn't work, check your error message and consult [this page](https://docs.unity3d.com/6000.0/Documentation/Manual/upm-ui-giturl.html). Examples can be imported via the Package Manager under the Samples tab. 
+
 ## Known issues
 
 - Low resolution artifact jitter when chaning lens shifting. The light cookie atlas freaks out when chaning light cookie resolution on every frame.
