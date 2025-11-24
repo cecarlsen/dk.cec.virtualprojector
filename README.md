@@ -18,10 +18,6 @@ Unity spot lights use a build-in mask shader that crops the cookie texture to a 
 
 Note that because both URP and HDRP render all light cookies into an texture atlas internally, there is a limit to how many projections you can fit inside this atlas. When you exceed the limit, Unity will downscale the cookie textures to make them fit and you will see the resolution of your virtual projections. The max atlas size is 4096 in URP and 16384 in HDRP. Because of the spot light circle cropping a 1920x1080 image will need a 2203x2203 area. This means you can only render a single 1080p (full HD) projection in URP. Very sucky, yes.
 
-## BiRP
-
-Note that BiRP light cookies only support grayscale, which it reads from the alpha channel.
-
 ## Author
 
 Carl Emil Carlsen [cec.dk](https://cec.dk)
