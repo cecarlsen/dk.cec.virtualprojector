@@ -27,7 +27,6 @@ public class VirtualProjector : MonoBehaviour
 	[SerializeField,Range(0.1f,4f)] float _throwRatio = 0.5f;
 	[SerializeField,Range(-1f,1f)] float _horizontalLensShift = 0f;
 	[SerializeField,Range(-1f,1f)] float _verticalLensShift = 0f;
-	[SerializeField] float _range = 50f;
 
 	[Header("Gizmos")]
 	[SerializeField] bool _drawGizmosAlways = false;
@@ -117,6 +116,8 @@ public class VirtualProjector : MonoBehaviour
 
 	void DrawGizmos()
 	{
+		if( !_light ) return;
+
 		float imageWidthPx = _texture ? _texture.width : 1f;
 		float imageHeightPx = _texture ? _texture.height : 1f;
 		float aspect = imageWidthPx / imageHeightPx;
@@ -129,10 +130,10 @@ public class VirtualProjector : MonoBehaviour
 		
 		Gizmos.color = _gizmoColor;
 		Gizmos.matrix = transform.localToWorldMatrix;
-		Gizmos.DrawRay( Vector3.zero, cornerUR * _range );
-		Gizmos.DrawRay( Vector3.zero, cornerLR * _range );
-		Gizmos.DrawRay( Vector3.zero, cornerLL * _range );
-		Gizmos.DrawRay( Vector3.zero, cornerUL * _range );
+		Gizmos.DrawRay( Vector3.zero, cornerUR * _light.range );
+		Gizmos.DrawRay( Vector3.zero, cornerLR * _light.range );
+		Gizmos.DrawRay( Vector3.zero, cornerLL * _light.range );
+		Gizmos.DrawRay( Vector3.zero, cornerUL * _light.range );
 	}
 
 
