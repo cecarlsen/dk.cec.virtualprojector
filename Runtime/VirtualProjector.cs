@@ -123,17 +123,23 @@ public class VirtualProjector : MonoBehaviour
 		float aspect = imageWidthPx / imageHeightPx;
 		Vector3 corner = new Vector3( 0.5f / _throwRatio, 0.5f / aspect / _throwRatio, 1f );
 		Vector2 shift = new Vector2( corner.x * _horizontalLensShift, corner.y * _verticalLensShift ) * 2f;
-		Vector3 cornerUR = new Vector3( corner.x + shift.x, corner.y + shift.y, corner.z );
-		Vector3 cornerLR = new Vector3( corner.x + shift.x, -corner.y + shift.y, corner.z );
-		Vector3 cornerLL = new Vector3( -corner.x + shift.x, -corner.y + shift.y, corner.z );
-		Vector3 cornerUL = new Vector3( -corner.x + shift.x, corner.y + shift.y, corner.z );
+		Vector3 cornerUR = new Vector3( corner.x + shift.x, corner.y + shift.y, corner.z ) * _light.range;
+		Vector3 cornerLR = new Vector3( corner.x + shift.x, -corner.y + shift.y, corner.z ) * _light.range;
+		Vector3 cornerLL = new Vector3( -corner.x + shift.x, -corner.y + shift.y, corner.z ) * _light.range;
+		Vector3 cornerUL = new Vector3( -corner.x + shift.x, corner.y + shift.y, corner.z ) * _light.range;
+
+		RaycastHit hit;
+		if( Physics.Raycast( transform.position, transform.rotation * cornerUR, out hit, _light.range ) ) cornerUR = cornerUR.normalized * hit.distance;
+		if( Physics.Raycast( transform.position, transform.rotation * cornerLR, out hit, _light.range ) ) cornerLR = cornerLR.normalized * hit.distance;
+		if( Physics.Raycast( transform.position, transform.rotation * cornerLL, out hit, _light.range ) ) cornerLL = cornerLL.normalized * hit.distance;
+		if( Physics.Raycast( transform.position, transform.rotation * cornerUL, out hit, _light.range ) ) cornerUL = cornerUL.normalized * hit.distance;
 		
 		Gizmos.color = _gizmoColor;
 		Gizmos.matrix = transform.localToWorldMatrix;
-		Gizmos.DrawRay( Vector3.zero, cornerUR * _light.range );
-		Gizmos.DrawRay( Vector3.zero, cornerLR * _light.range );
-		Gizmos.DrawRay( Vector3.zero, cornerLL * _light.range );
-		Gizmos.DrawRay( Vector3.zero, cornerUL * _light.range );
+		Gizmos.DrawRay( Vector3.zero, cornerUR );
+		Gizmos.DrawRay( Vector3.zero, cornerLR );
+		Gizmos.DrawRay( Vector3.zero, cornerLL );
+		Gizmos.DrawRay( Vector3.zero, cornerUL );
 	}
 
 
