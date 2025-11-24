@@ -47,7 +47,6 @@ public class VirtualProjector : MonoBehaviour
 
 	bool _dirty;
 
-	int _textureCount = 0;
 
 	public static readonly string logPrepend = $"<b>[{nameof( VirtualProjector )}]</b>";
 
