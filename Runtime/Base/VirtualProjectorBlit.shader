@@ -34,6 +34,7 @@ Shader "Hidden/VirtualProjectorBlit"
 		//float4 _MainTex_ST; // It looks like Graphics.Blit overwrites this.
 		float4 _MainTexTransform;
 		float4 _MaskColor;
+		float _BlackLevel;
 
 		ToFrag Vert( ToVert v )
 		{
@@ -44,21 +45,22 @@ Shader "Hidden/VirtualProjectorBlit"
 		}
 
 
-		fixed4 FragWhite( ToFrag i ) : SV_Target
+		float4 FragWhite( ToFrag i ) : SV_Target
 		{
 			
-			return fixed4( 0, 1, 0, 1 );
+			return float4( 0, 1, 0, 1 );
 		}
 
 
-		fixed4 FragTexture( ToFrag i ) : SV_Target
+		float4 FragTexture( ToFrag i ) : SV_Target
 		{
 			float2 mainTexUv = i.uv * _MainTexTransform.xy + _MainTexTransform.zw;
 
 			// TODO: be clever.
 			if( mainTexUv.x < 0.0 || mainTexUv.x > 1.0 || mainTexUv.y < 0.0 || mainTexUv.y > 1.0 ) return _MaskColor;
 
-			fixed4 col = tex2D( _MainTex, mainTexUv );
+			float4 col = tex2D( _MainTex, mainTexUv );
+			col.rgb = saturate( col.rgb + _BlackLevel );
 
 			return col;
 		}

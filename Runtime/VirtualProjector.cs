@@ -22,7 +22,8 @@ public class VirtualProjector : MonoBehaviour
 {
 	[Header("Content")]
 	[SerializeField] Texture _texture;
-
+	[SerializeField,Range(0f,1f)] float _blackLevel = 0f;
+	
 	[Header("Intrinsics")]
 	[SerializeField,Range(0.1f,4f)] float _throwRatio = 0.5f;
 	[SerializeField,Range(-1f,1f)] float _horizontalLensShift = 0f;
@@ -50,6 +51,15 @@ public class VirtualProjector : MonoBehaviour
 	public static readonly string logPrepend = $"<b>[{nameof( VirtualProjector )}]</b>";
 
 
+	public float blackLevel
+	{
+		get { return _blackLevel; }
+		set {
+			_blackLevel = Mathf.Clamp01( value );
+			_dirty = true;
+		}
+	}
+
 	public bool showSpotArea
 	{
 		get { return _showSpotArea; }
@@ -60,10 +70,12 @@ public class VirtualProjector : MonoBehaviour
 	}
 
 
+
 	static class ShaderIDs
 	{
 		public static readonly int _MainTexTransform = Shader.PropertyToID( nameof( _MainTexTransform ) );
 		public static readonly int _MaskColor = Shader.PropertyToID( nameof( _MaskColor ) );
+		public static readonly int _BlackLevel = Shader.PropertyToID( nameof( _BlackLevel ) );
 	}
 
 
@@ -98,6 +110,7 @@ public class VirtualProjector : MonoBehaviour
 	{
 		_dirty = true;
 
+		blackLevel = _blackLevel;
 		showSpotArea = _showSpotArea;
 	}
 
@@ -186,6 +199,7 @@ public class VirtualProjector : MonoBehaviour
 
 		// Set shader constants.
 		_blitMaterial.SetVector( ShaderIDs._MainTexTransform, imageTransform );
+		_blitMaterial.SetFloat( ShaderIDs._BlackLevel, _blackLevel );
 		
 		// Copy and transform texture into cookie.
 		if( _texture ){
