@@ -148,7 +148,7 @@ public class VirtualProjector : MonoBehaviour
 		if( Physics.Raycast( transform.position, transform.rotation * cornerUL, out hit, _light.range ) ) cornerUL = cornerUL.normalized * hit.distance;
 		
 		Gizmos.color = _gizmoColor;
-		Gizmos.matrix = transform.localToWorldMatrix;
+		Gizmos.matrix = Matrix4x4.TRS( transform.position, transform.rotation, Vector3.one );
 		Gizmos.DrawRay( Vector3.zero, cornerUR );
 		Gizmos.DrawRay( Vector3.zero, cornerLR );
 		Gizmos.DrawRay( Vector3.zero, cornerLL );
