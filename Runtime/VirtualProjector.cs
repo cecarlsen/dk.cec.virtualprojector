@@ -51,6 +51,15 @@ public class VirtualProjector : MonoBehaviour
 	public static readonly string logPrepend = $"<b>[{nameof( VirtualProjector )}]</b>";
 
 
+	public Texture texture
+	{
+		get { return _texture; }
+		set{
+			_texture = value;
+			_dirty = true;
+		}
+	}
+
 	public float blackLevel
 	{
 		get { return _blackLevel; }
