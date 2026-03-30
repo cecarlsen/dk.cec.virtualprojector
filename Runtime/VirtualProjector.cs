@@ -202,8 +202,9 @@ public class VirtualProjector : MonoBehaviour
 				if( Application.isPlaying ) Destroy( _cookieTexture );
 				else DestroyImmediate( _cookieTexture );
 			}
-			_cookieTexture = new RenderTexture( cokieSizePx, cokieSizePx, 0, RenderTextureFormat.ARGB32 );
-			_cookieTexture.name = "VirtualProjection";
+			_cookieTexture = new RenderTexture( cokieSizePx, cokieSizePx, 0, RenderTextureFormat.ARGB32 ){
+				name = "VirtualProjection"	
+			};
 		}
 
 		// Set shader constants.
